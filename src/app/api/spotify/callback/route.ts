@@ -3,13 +3,17 @@ import { saveRefreshToken } from '@/lib/spotify-token';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
+const PENDING_COOKIE = 'spotify_refresh_token_pending';
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
   const state = searchParams.get('state');
   const error = searchParams.get('error');
 
-  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://127.0.0.1:3000';
+  const baseUrl = (
+    process.env.NEXT_PUBLIC_URL || 'http://127.0.0.1:3000'
+  ).replace(/\/$/, '');
 
   if (error) {
     return NextResponse.redirect(
@@ -42,11 +46,33 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    await saveRefreshToken(refreshToken);
+    let savedToFile = false;
+    try {
+      await saveRefreshToken(refreshToken);
+      savedToFile = true;
+    } catch {
+      savedToFile = false;
+    }
 
     const response = NextResponse.redirect(
-      new URL('/spotify-setup?success=1', baseUrl),
+      new URL(
+        savedToFile
+          ? '/spotify-setup?success=1'
+          : '/spotify-setup?success=vercel',
+        baseUrl,
+      ),
     );
+
+    if (!savedToFile) {
+      response.cookies.set(PENDING_COOKIE, refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 600,
+        path: '/',
+      });
+    }
+
     response.cookies.delete('spotify_auth_state');
     return response;
   } catch (err) {

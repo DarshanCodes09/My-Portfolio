@@ -36,45 +36,50 @@ export async function GET() {
   if (clientId && clientSecret && refreshToken) {
     const accessToken = await getSpotifyAccessToken();
 
-    if (accessToken) {
-      try {
-        const currentResponse = await fetch(
-          `${SPOTIFY_API_URL}/me/player/currently-playing`,
+    if (!accessToken) {
+      return NextResponse.json({
+        configured: false,
+        error: 'invalid_refresh_token',
+      });
+    }
+
+    try {
+      const currentResponse = await fetch(
+        `${SPOTIFY_API_URL}/me/player/currently-playing`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          cache: 'no-store',
+        },
+      );
+
+      if (currentResponse.status === 200) {
+        const song = await currentResponse.json();
+        if (song?.item) {
+          return NextResponse.json(
+            formatTrack(song.item, song.is_playing, song.progress_ms ?? 0),
+          );
+        }
+      }
+
+      if (currentResponse.status !== 403) {
+        const recentResponse = await fetch(
+          `${SPOTIFY_API_URL}/me/player/recently-played?limit=1`,
           {
             headers: { Authorization: `Bearer ${accessToken}` },
             cache: 'no-store',
           },
         );
 
-        if (currentResponse.status === 200) {
-          const song = await currentResponse.json();
-          if (song?.item) {
-            return NextResponse.json(
-              formatTrack(song.item, song.is_playing, song.progress_ms ?? 0),
-            );
+        if (recentResponse.ok) {
+          const recent = await recentResponse.json();
+          const track = recent.items?.[0]?.track as SpotifyTrack | undefined;
+          if (track) {
+            return NextResponse.json(formatTrack(track, false, 0));
           }
         }
-
-        if (currentResponse.status !== 403) {
-          const recentResponse = await fetch(
-            `${SPOTIFY_API_URL}/me/player/recently-played?limit=1`,
-            {
-              headers: { Authorization: `Bearer ${accessToken}` },
-              cache: 'no-store',
-            },
-          );
-
-          if (recentResponse.ok) {
-            const recent = await recentResponse.json();
-            const track = recent.items?.[0]?.track as SpotifyTrack | undefined;
-            if (track) {
-              return NextResponse.json(formatTrack(track, false, 0));
-            }
-          }
-        }
-      } catch {
-        // fall through
       }
+    } catch {
+      // fall through
     }
   }
 

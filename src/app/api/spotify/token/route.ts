@@ -13,9 +13,27 @@ export async function POST(request: Request) {
       );
     }
 
-    await saveRefreshToken(refreshToken);
+    if (process.env.VERCEL) {
+      return NextResponse.json({
+        success: false,
+        vercel: true,
+        message:
+          'On Vercel, add SPOTIFY_REFRESH_TOKEN in Project Settings → Environment Variables, then redeploy.',
+        refreshToken,
+      });
+    }
 
-    return NextResponse.json({ success: true });
+    try {
+      await saveRefreshToken(refreshToken);
+      return NextResponse.json({ success: true });
+    } catch {
+      return NextResponse.json({
+        success: false,
+        message:
+          'Could not save to file. Add SPOTIFY_REFRESH_TOKEN to .env.local instead.',
+        refreshToken,
+      });
+    }
   } catch {
     return NextResponse.json(
       { error: 'Failed to save token' },
