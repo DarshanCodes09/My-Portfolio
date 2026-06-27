@@ -1,129 +1,159 @@
-import { heroConfig, skillComponents, socialLinks } from '@/config/Hero';
-import { parseTemplate } from '@/lib/hero';
-import { cn } from '@/lib/utils';
-import { Link } from 'next-view-transitions';
+import { siteConfig } from '@/config/Site';
+import { spotifyConfig } from '@/config/Spotify';
 import Image from 'next/image';
-import React from 'react';
 
 import Container from '../common/Container';
-import Skill from '../common/Skill';
-import { TrackedLink } from '../common/TrackedLink';
-import CV from '../svgs/CV';
-import Chat from '../svgs/Chat';
-import { Button } from '../ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-
-const buttonIcons = {
-  CV: CV,
-  Chat: Chat,
-};
+import FadeIn from '../common/FadeIn';
+import RotatingRoles from './RotatingRoles';
+import SocialLinks from './SocialLinks';
+import SpotifyNowPlaying from './SpotifyNowPlaying';
 
 export default function Hero() {
-  const { name, title, avatar, skills, description, buttons } = heroConfig;
-
-  const renderDescription = () => {
-    const parts = parseTemplate(description.template, skills);
-
-    return parts.map((part) => {
-      if (part.type === 'skill' && 'skill' in part && part.skill) {
-        const SkillComponent =
-          skillComponents[part.skill.component as keyof typeof skillComponents];
-        return (
-          <Skill key={part.key} name={part.skill.name} href={part.skill.href}>
-            <SkillComponent />
-          </Skill>
-        );
-      } else if (part.type === 'bold' && 'text' in part) {
-        return (
-          <b key={part.key} className="text-primary whitespace-pre-wrap">
-            {part.text}
-          </b>
-        );
-      } else if (part.type === 'text' && 'text' in part) {
-        return (
-          <span key={part.key} className="whitespace-pre-wrap">
-            {part.text}
-          </span>
-        );
-      }
-      return null;
-    });
-  };
-
   return (
-    <Container className="mx-auto max-w-5xl">
-      {/* Image */}
-      <Image
-        src={avatar}
-        alt="hero"
-        width={100}
-        height={100}
-        className="size-24 rounded-full bg-blue-300 dark:bg-yellow-300"
-      />
-
-      {/* Text Area */}
-      <div className="mt-8 flex flex-col gap-2">
-        <h1 className="text-4xl font-bold">
-          Hi, I&apos;m {name} — <span className="text-secondary">{title}</span>
-        </h1>
-
-        <div className="mt-4 flex flex-wrap items-center gap-x-1.5 gap-y-2 text-base whitespace-pre-wrap text-neutral-500 md:text-lg">
-          {renderDescription()}
+    <Container id="about">
+      <FadeIn>
+        <div className="mb-7 flex items-center gap-4">
+          <Image
+            src={siteConfig.avatar}
+            alt={siteConfig.name}
+            width={64}
+            height={64}
+            className="h-15 w-15 shrink-0 rounded-xl border border-zinc-200 object-cover sm:h-16 sm:w-16 dark:border-zinc-800"
+            priority
+          />
+          <div className="min-w-0 flex-1">
+            <h1 className="text-primary text-2xl leading-tight font-semibold tracking-tight sm:text-3xl md:text-[2rem]">
+              {siteConfig.name}
+            </h1>
+            <div className="mt-0.5">
+              <RotatingRoles />
+            </div>
+          </div>
         </div>
-      </div>
+      </FadeIn>
 
-      {/* Buttons */}
-      <div className="mt-8 flex gap-4">
-        {buttons.map((button, index) => {
-          const IconComponent =
-            buttonIcons[button.icon as keyof typeof buttonIcons];
-          return (
-            <Button
-              key={index}
-              variant={button.variant as 'outline' | 'default'}
-              className={cn(
-                button.variant === 'outline' && 'inset-shadow-indigo-500',
-                button.variant === 'default' && 'inset-shadow-indigo-500',
-              )}
-              track={{
-                name: 'button_click',
-                data: { buttonId: button.text, section: 'hero' },
-              }}
-            >
-              {IconComponent && <IconComponent />}
-              <Link href={button.href}>{button.text}</Link>
-            </Button>
-          );
-        })}
-      </div>
-
-      {/* Social Links */}
-      <div className="mt-8 flex gap-2">
-        {socialLinks.map((link) => (
-          <Tooltip key={link.name} delayDuration={0}>
-            <TooltipTrigger asChild>
-              <TrackedLink
-                href={link.href}
-                key={link.name}
-                className="text-secondary flex items-center gap-2"
-                track={{
-                  name: 'external_link_click',
-                  data: {
-                    url: link.href,
-                    text: link.name,
-                    location: 'hero_social',
-                  },
-                }}
+      <FadeIn delay={0.08}>
+        <div className="mt-10 mb-6 flex flex-wrap items-start gap-x-6 gap-y-4 sm:gap-x-8">
+          <div className="space-y-1">
+            <div className="section-kicker">Location</div>
+            <div className="text-primary flex items-center gap-2 text-[13.5px] font-medium sm:text-[15px]">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-icon shrink-0"
               >
-                <span className="size-6">{link.icon}</span>
-              </TrackedLink>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{link.name}</p>
-            </TooltipContent>
-          </Tooltip>
-        ))}
-      </div>
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              {siteConfig.location}
+            </div>
+          </div>
+          <div className="space-y-1">
+            <div className="section-kicker">Email</div>
+            <a
+              href={`mailto:${siteConfig.email}`}
+              className="group text-primary flex items-center gap-2 text-[13.5px] font-medium transition-colors hover:text-zinc-700 sm:text-[15px] dark:hover:text-zinc-100"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-icon shrink-0"
+              >
+                <rect width="20" height="16" x="2" y="4" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+              <span className="underline-offset-[2px] group-hover:underline">
+                {siteConfig.email}
+              </span>
+            </a>
+          </div>
+          <div className="hidden space-y-1 sm:block">
+            <div className="section-kicker">Pronouns</div>
+            <div className="text-primary flex items-center gap-2 text-[13.5px] font-medium sm:text-[15px]">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-icon shrink-0"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+              </svg>
+              {siteConfig.pronouns}
+            </div>
+          </div>
+        </div>
+      </FadeIn>
+
+      <FadeIn delay={0.14}>
+        <p className="text-secondary mb-8 text-[13.5px] leading-[1.85] font-[450] sm:text-[15px]">
+          I build full-stack web products end-to-end, obsessing over small
+          details that make software feel right to use. Currently working with{' '}
+          <a
+            href="https://www.typescriptlang.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-link font-medium"
+          >
+            TypeScript
+          </a>
+          ,{' '}
+          <a
+            href="https://react.dev/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-link font-medium"
+          >
+            React
+          </a>
+          ,{' '}
+          <a
+            href="https://nextjs.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-link font-medium"
+          >
+            Next.js
+          </a>
+          , and{' '}
+          <a
+            href="https://tailwindcss.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-link font-medium"
+          >
+            Tailwind CSS
+          </a>
+          .
+        </p>
+      </FadeIn>
+
+      {spotifyConfig.enabled && (
+        <FadeIn delay={0.2}>
+          <SpotifyNowPlaying />
+        </FadeIn>
+      )}
+
+      <FadeIn delay={0.26}>
+        <SocialLinks />
+      </FadeIn>
     </Container>
   );
 }

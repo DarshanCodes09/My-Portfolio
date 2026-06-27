@@ -1,11 +1,16 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      { source: '/work', destination: '/work-experience', permanent: true },
+    ];
+  },
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'imagekit.io',
+        hostname: 'cdn.jsdelivr.net',
       },
       {
         protocol: 'https',
@@ -22,6 +27,14 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'images-na.ssl-images-amazon.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.scdn.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.simpleicons.org',
       },
     ],
   },

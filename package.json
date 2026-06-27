@@ -1,7 +1,13 @@
 {
-  "name": "sleek-portfolio",
-  "version": "0.1.0",
+  "name": "darshan-portfolio",
+  "version": "1.0.0",
   "private": true,
+  "description": "Personal portfolio of Darshan Kushalkar — Full-Stack Developer",
+  "author": "Darshan Kushalkar <thedarshan.dev@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DarshanCodes09/My-Portfolio.git"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

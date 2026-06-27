@@ -128,13 +128,83 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    background-size: 87px 87px, 87px 87px, auto, auto;
+  }
+
+  html:not(.dark) body {
+    background:
+      linear-gradient(to right, rgb(0 0 0 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(0 0 0 / 0.045) 1px, transparent 1px),
+      radial-gradient(circle at 50% 0%, rgb(0 0 0 / 0.035), transparent 32rem),
+      #f7f7f7;
+  }
+
+  html.dark body {
+    background:
+      linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      radial-gradient(circle at 50% 0%, rgb(255 255 255 / 0.055), transparent 32rem),
+      #030305;
   }
 }
 
+.section-kicker {
+  @apply text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-[#a0a0a0];
+}
+
+.section-title {
+  @apply text-lg sm:text-xl font-semibold tracking-tight text-zinc-900 dark:text-[#f0f0f0];
+}
+
+.siddz-card {
+  @apply rounded-2xl border border-zinc-200/80 bg-white/70 shadow-sm backdrop-blur-sm dark:border-zinc-800/70 dark:bg-zinc-900/35 dark:shadow-[0_0_0_1px_rgb(255_255_255/0.02)];
+}
+
+.work-card {
+  @apply rounded-2xl border border-zinc-200/80 bg-white/80 p-6 shadow-sm backdrop-blur-sm transition-colors sm:p-7 dark:border-zinc-800/80 dark:bg-zinc-900/50 dark:shadow-[0_0_0_1px_rgb(255_255_255/0.03)];
+}
+
+.contact-row {
+  @apply flex items-center gap-3 rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3.5 transition-all duration-200 hover:border-zinc-300 hover:bg-zinc-100/80 dark:border-zinc-800/60 dark:bg-zinc-950/30 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/60;
+}
+
+.spotify-card {
+  @apply rounded-xl border border-transparent px-1 py-1 transition-colors hover:border-zinc-200 dark:hover:border-zinc-800;
+}
+
+.contact-card {
+  @apply flex items-center gap-3 rounded-xl border border-zinc-200 bg-white p-4 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-transparent dark:hover:border-zinc-700 dark:hover:bg-zinc-900/50;
+}
+
+.text-primary {
+  @apply text-zinc-900 dark:text-[#f0f0f0];
+}
+
 .text-secondary {
-  @apply text-[#909092] dark:text-[#909092];
+  @apply text-zinc-600 dark:text-[#b2b2b2];
+}
+
+.text-muted {
+  @apply text-zinc-500 dark:text-zinc-500;
+}
+
+.text-subtle {
+  @apply text-zinc-400 dark:text-[#737373];
+}
+
+.text-icon {
+  @apply text-zinc-500 dark:text-[#a0a0a0];
+}
+
+.text-link {
+  @apply text-zinc-800 underline-offset-2 hover:underline dark:text-zinc-200;
 }
 
 .font-hanken-grotesk {
@@ -266,3 +336,6 @@
 .prose h4 {
   font-size: calc(var(--blog-font-size) * 1.25);
 }
+
+
+

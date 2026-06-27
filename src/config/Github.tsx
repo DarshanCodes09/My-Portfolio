@@ -6,12 +6,12 @@
  */
 
 export const githubConfig = {
-  username: 'ramxcodes',
+  username: 'DarshanCodes09',
   apiUrl: 'https://github-contributions-api.deno.dev',
 
   // Display settings
-  title: 'GitHub Activity',
-  subtitle: 'coding journey over the past year',
+  title: '',
+  subtitle: '',
 
   // Chart settings
   blockSize: 11,
@@ -39,23 +39,23 @@ export const githubConfig = {
   weekdays: ['', 'M', '', 'W', '', 'F', ''],
 
   // Total count label template
-  totalCountLabel: '{{count}} contributions in the last year',
+  totalCountLabel: '{{count}} Contributions · 2025–26',
 
-  // Theme configuration for dark and light modes
+  // Monochrome theme matching siddz.com reference
   theme: {
     dark: [
-      'rgb(22, 27, 34)', // Very dark for no contributions
-      'rgb(14, 68, 41)', // Dark green
-      'rgb(0, 109, 50)', // Medium green
-      'rgb(38, 166, 65)', // Bright green
-      'rgb(57, 211, 83)', // Very bright green
+      'rgb(22, 22, 24)',
+      'rgb(48, 48, 52)',
+      'rgb(88, 88, 94)',
+      'rgb(140, 140, 148)',
+      'rgb(220, 220, 226)',
     ],
     light: [
-      'rgb(235, 237, 240)', // Light gray
-      'rgb(155, 233, 168)', // Light green
-      'rgb(64, 196, 99)', // Medium green
-      'rgb(48, 161, 78)', // Dark green
-      'rgb(33, 110, 57)', // Very dark green
+      'rgb(235, 237, 240)',
+      'rgb(210, 212, 216)',
+      'rgb(170, 172, 178)',
+      'rgb(120, 122, 128)',
+      'rgb(50, 52, 58)',
     ],
   },
 

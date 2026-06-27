@@ -1,25 +1,25 @@
 import { type Experience } from '@/config/Experience';
-import { cn } from '@/lib/utils';
 import { Link } from 'next-view-transitions';
 import Image from 'next/image';
 import React from 'react';
 
-import Skill from '../common/Skill';
-import Github from '../svgs/Github';
-import LinkedIn from '../svgs/LinkedIn';
+import TechIconRow from '../common/TechIconRow';
 import Website from '../svgs/Website';
-import X from '../svgs/X';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface ExperienceCardProps {
   experience: Experience;
+  compact?: boolean;
 }
 
 const parseDescription = (text: string): string => {
   return text.replace(/\*(.*?)\*/g, '<b>$1</b>');
 };
 
-export function ExperienceCard({ experience }: ExperienceCardProps) {
+export function ExperienceCard({
+  experience,
+  compact = false,
+}: ExperienceCardProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Company Header */}
@@ -27,7 +27,7 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
         {/* Left Side */}
         <div className="flex items-center gap-4">
           <Image
-            src={experience.image}
+            src={experience.image || '/assets/logo.png'}
             alt={experience.company}
             width={100}
             height={100}
@@ -35,15 +35,8 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
           />
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <h3
-                className={cn(
-                  'text-lg font-bold',
-                  experience.isBlur ? 'blur-[5px]' : 'blur-none',
-                )}
-              >
-                {experience.company}
-              </h3>
-              {experience.website && (
+              <h3 className="text-lg font-bold">{experience.company}</h3>
+              {experience.website && experience.website !== '#' && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
@@ -55,48 +48,6 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent>Visit Website</TooltipContent>
-                </Tooltip>
-              )}
-              {experience.x && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={experience.x}
-                      target="_blank"
-                      className="size-4 text-neutral-500"
-                    >
-                      <X />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>Follow on X</TooltipContent>
-                </Tooltip>
-              )}
-              {experience.linkedin && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={experience.linkedin}
-                      target="_blank"
-                      className="size-4 text-neutral-500"
-                    >
-                      <LinkedIn />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>Connect on LinkedIn</TooltipContent>
-                </Tooltip>
-              )}
-              {experience.github && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={experience.github}
-                      target="_blank"
-                      className="size-4 text-neutral-500"
-                    >
-                      <Github />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>View GitHub</TooltipContent>
                 </Tooltip>
               )}
               {experience.isCurrent && (
@@ -119,35 +70,27 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
         </div>
       </div>
 
-      {/* Technologies */}
-      <div>
-        <h4 className="text-md mt-4 mb-2 font-semibold">Technologies</h4>
-        <div className="flex flex-wrap gap-2">
-          {experience.technologies.map((technology, techIndex: number) => (
-            <Skill
-              key={techIndex}
-              name={technology.name}
-              href={technology.href}
-            >
-              {technology.icon}
-            </Skill>
-          ))}
-        </div>
-      </div>
+      {!compact && (
+        <>
+          <div>
+            <h4 className="text-md mt-4 mb-2 font-semibold">Technologies</h4>
+            <TechIconRow technologies={experience.technologies} />
+          </div>
 
-      {/* Description */}
-      <div className="text-secondary flex flex-col">
-        {experience.description.map(
-          (description: string, descIndex: number) => (
-            <p
-              key={descIndex}
-              dangerouslySetInnerHTML={{
-                __html: `• ${parseDescription(description)}`,
-              }}
-            />
-          ),
-        )}
-      </div>
+          <div className="text-secondary flex flex-col">
+            {experience.description.map(
+              (description: string, descIndex: number) => (
+                <p
+                  key={descIndex}
+                  dangerouslySetInnerHTML={{
+                    __html: `• ${parseDescription(description)}`,
+                  }}
+                />
+              ),
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

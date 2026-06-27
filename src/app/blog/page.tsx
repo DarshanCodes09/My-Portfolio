@@ -1,79 +1,30 @@
-import Container from '@/components/common/Container';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
+import BlogPageFooter from '@/components/blog/BlogPageFooter';
+import FadeIn from '@/components/common/FadeIn';
 import { generateMetadata as getMetadata } from '@/config/Meta';
-import { getAllTags, getPublishedBlogPosts } from '@/lib/blog';
-import { Metadata } from 'next';
-import { Robots } from 'next/dist/lib/metadata/types/metadata-types';
-import { Suspense } from 'react';
 
-import { BlogPageClient } from './BlogPageClient';
-
-export const generateMetadata = (): Metadata => {
-  const metadata = getMetadata('/blog');
-  return {
-    ...metadata,
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      } as Robots['googleBot'],
-    },
-  };
-};
-
-function BlogPageLoading() {
-  return (
-    <Container className="py-16">
-      <div className="space-y-8">
-        {/* Header Skeleton */}
-        <div className="space-y-4 text-center">
-          <Skeleton className="mx-auto h-12 w-32" />
-          <Skeleton className="mx-auto h-6 w-96" />
-        </div>
-
-        <Separator />
-
-        {/* Tags Skeleton */}
-        <div className="space-y-4">
-          <Skeleton className="h-6 w-32" />
-          <div className="flex flex-wrap gap-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-8 w-20" />
-            ))}
-          </div>
-        </div>
-
-        {/* Blog Posts Skeleton */}
-        <div className="space-y-6">
-          <Skeleton className="h-8 w-48" />
-          <div className="space-y-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="space-y-2">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-4 w-2/3" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </Container>
-  );
-}
+export const metadata = getMetadata('/blog');
 
 export default function BlogPage() {
-  const allPosts = getPublishedBlogPosts();
-  const allTags = getAllTags();
-
   return (
-    <Suspense fallback={<BlogPageLoading />}>
-      <BlogPageClient initialPosts={allPosts} initialTags={allTags} />
-    </Suspense>
+    <main className="relative z-10 flex min-h-screen flex-col">
+      <section className="flex flex-1 flex-col items-center justify-center px-6 pt-24 pb-32 text-center md:pt-28">
+        <FadeIn className="max-w-2xl">
+          <h1 className="font-hanken-grotesk-italic text-primary text-[2.5rem] leading-tight font-medium tracking-tight sm:text-5xl md:text-[3.25rem]">
+            Writing &amp; Thoughts #
+          </h1>
+          <p className="text-secondary mx-auto mt-5 max-w-md text-[14px] leading-relaxed sm:text-[15px]">
+            I write about engineering, design, and everything in between.
+          </p>
+        </FadeIn>
+
+        <FadeIn delay={0.12} className="mt-16">
+          <p className="text-primary text-[15px] font-semibold tracking-wide sm:text-base">
+            Coming Soon...
+          </p>
+        </FadeIn>
+      </section>
+
+      <BlogPageFooter />
+    </main>
   );
 }

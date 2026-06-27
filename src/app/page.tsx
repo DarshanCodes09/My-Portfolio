@@ -1,27 +1,21 @@
-import Container from '@/components/common/Container';
-import About from '@/components/landing/About';
-import Blog from '@/components/landing/Blog';
-import CTA from '@/components/landing/CTA';
 import Experience from '@/components/landing/Experience';
+import FeaturedProjects from '@/components/landing/FeaturedProjects';
 import Github from '@/components/landing/Github';
 import Hero from '@/components/landing/Hero';
-import Journey from '@/components/landing/Journey';
-import Work from '@/components/landing/Projects';
-import Setup from '@/components/landing/Setup';
-import React from 'react';
+import TechStack from '@/components/landing/TechStack';
+import WorkTogether from '@/components/landing/WorkTogether';
 
 export default function page() {
   return (
-    <Container className="min-h-screen py-16">
-      <Hero />
-      <Experience />
-      <Work />
-      <About />
-      <Github />
-      <Blog />
-      <CTA />
-      <Setup />
-      <Journey />
-    </Container>
+    <main className="relative z-10">
+      <section className="mb-0 min-h-screen pt-30 pb-12 md:pt-36">
+        <Hero />
+        <Github />
+        <TechStack />
+        <FeaturedProjects />
+        <Experience />
+        <WorkTogether />
+      </section>
+    </main>
   );
 }

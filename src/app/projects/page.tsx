@@ -1,58 +1,35 @@
 import Container from '@/components/common/Container';
-import { ProjectList } from '@/components/projects/ProjectList';
-import { Separator } from '@/components/ui/separator';
+import { ProjectsShowcase } from '@/components/projects/ProjectsShowcase';
 import { generateMetadata as getMetadata } from '@/config/Meta';
 import { projects } from '@/config/Projects';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   ...getMetadata('/projects'),
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
 };
 
 export default function ProjectsPage() {
   return (
-    <Container className="py-16">
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="space-y-4 text-center">
-          <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
-            Projects
-          </h1>
-          <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
-            My projects and work across different technologies and domains.
+    <div className="relative min-h-screen pb-20">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[480px] bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,120,120,0.08),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,120,120,0.12),transparent)]"
+      />
+
+      <Container className="relative !max-w-4xl py-16 sm:py-20">
+        <header className="mb-14 space-y-4 sm:mb-16">
+          <p className="section-kicker">Selected Work</p>
+          <h1 className="section-title text-4xl sm:text-5xl">Projects</h1>
+          <p className="text-secondary max-w-xl text-[15px] leading-relaxed sm:text-base">
+            A curated collection of products and platforms I&apos;ve designed
+            and built — from AI automation studios to full-stack web
+            applications.
           </p>
-        </div>
+          <div className="h-px w-full max-w-xs bg-gradient-to-r from-zinc-300 to-transparent dark:from-zinc-700" />
+        </header>
 
-        <Separator />
-
-        {/* Projects */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">
-              All Projects
-              {projects.length > 0 && (
-                <span className="text-muted-foreground ml-2 text-sm font-normal">
-                  ({projects.length}{' '}
-                  {projects.length === 1 ? 'project' : 'projects'})
-                </span>
-              )}
-            </h2>
-          </div>
-
-          <ProjectList projects={projects} />
-        </div>
-      </div>
-    </Container>
+        <ProjectsShowcase projects={projects} />
+      </Container>
+    </div>
   );
 }

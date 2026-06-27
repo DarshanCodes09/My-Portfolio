@@ -1,0 +1,51 @@
+export const siteConfig = {
+  name: 'Darshan Kushalkar',
+  title: 'Full-Stack Developer',
+  location: 'India',
+  email: 'thedarshan.dev@gmail.com',
+  pronouns: 'he/him',
+  avatar: '/assets/logo.png',
+  bio: 'I build full-stack web products end-to-end, obsessing over small details that make software feel right to use. Currently working with TypeScript, React, Next.js, and Tailwind CSS.',
+  url: process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000',
+  ogImage: '/assets/logo.png',
+  roles: [
+    'Full-Stack Developer',
+    'Curious Builder',
+    'Creative Thinker',
+    'Open-Source Contributor',
+  ],
+  social: {
+    twitter: 'https://x.com/thedarshan_dev',
+    github: 'https://github.com/DarshanCodes09',
+    linkedin: 'https://www.linkedin.com/in/darshan-kushalkar-2919aa234/',
+    email: 'mailto:thedarshan.dev@gmail.com',
+    medium: 'https://medium.com/@darshan.kushal321',
+  },
+  author: {
+    name: 'Darshan Kushalkar',
+    github: 'DarshanCodes09',
+    linkedin: 'darshan-kushalkar-2919aa234',
+    twitter: '@thedarshan_dev',
+    email: 'thedarshan.dev@gmail.com',
+  },
+  keywords: [
+    'Darshan Kushalkar',
+    'Full-Stack Developer',
+    'portfolio',
+    'web developer',
+    'React',
+    'Next.js',
+    'TypeScript',
+    'Node.js',
+    'India',
+  ],
+  calLink: 'https://cal.com/darshan-kushalkar-uazfuo/chat-with-darshan',
+  twitterHandle: '@thedarshan_dev',
+  quote: {
+    text: 'You have a right to perform your prescribed duty, but you are not entitled to the fruits of actions.',
+    author: 'Bhagavad Gita',
+  },
+  repository: 'https://github.com/DarshanCodes09/My-Portfolio',
+} as const;
+
+export type SiteConfig = typeof siteConfig;

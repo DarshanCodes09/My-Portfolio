@@ -1,5 +1,4 @@
-import { about } from './About';
-import { heroConfig } from './Hero';
+import { siteConfig } from './Site';
 
 export interface PageMeta {
   title: string;
@@ -9,163 +8,83 @@ export interface PageMeta {
   twitterCard?: 'summary' | 'summary_large_image';
 }
 
-// Base site configuration
-export const siteConfig = {
-  name: heroConfig.name,
-  title: 'Sleek Portfolio',
-  description: 'Sleek Portfolio Template by @Ramxcodes',
-  url: process.env.NEXT_PUBLIC_URL || 'http://localhost:3000',
-  ogImage: '/meta/opengraph-image.png',
-  author: {
-    name: about.name,
-    twitter: '@ramxcodes',
-    github: 'ramxcodes',
-    linkedin: 'ramxcodes',
-    email: 'ramxcodes@gmail.com',
-  },
-  keywords: [
-    'portfolio',
-    'developer',
-    'full-stack',
-    'react',
-    'nextjs',
-    'typescript',
-    'web development',
-    heroConfig.name.toLowerCase(),
-  ],
-};
-
 export const pageMetadata: Record<string, PageMeta> = {
-  // Home page
   '/': {
-    title: `${heroConfig.name} - ${heroConfig.title}`,
-    description: `${about.description} Explore my projects, experience, and technical expertise.`,
-    keywords: [
-      'portfolio',
-      'developer',
-      'full-stack',
-      'web development',
-      'projects',
-    ],
-    ogImage: '/meta/hero.png',
+    title: `${siteConfig.name} — ${siteConfig.title}`,
+    description: `${siteConfig.bio} Explore my projects, experience, and technical work.`,
+    keywords: [...siteConfig.keywords, 'projects', 'experience'],
+    ogImage: siteConfig.ogImage,
     twitterCard: 'summary_large_image',
   },
-
-  // Contact page
   '/contact': {
-    title: 'Contact - Get in Touch',
+    title: `Contact — ${siteConfig.name}`,
     description:
-      "Get in touch with me for collaborations, projects, or opportunities. I'd love to hear from you!",
-    keywords: ['contact', 'hire', 'collaboration', 'freelance', 'developer'],
-    ogImage: '/assets/logo.png',
+      "Get in touch for collaborations, freelance work, or full-time opportunities. I'd love to hear from you.",
+    keywords: ['contact', 'hire', 'collaboration', 'freelance'],
+    ogImage: siteConfig.ogImage,
     twitterCard: 'summary',
   },
-
-  // Work Experience page
   '/work-experience': {
-    title: 'Work Experience - Professional Journey',
+    title: `Work Experience — ${siteConfig.name}`,
     description:
-      'Explore my professional work experience across different companies and roles in software development.',
-    keywords: [
-      'work experience',
-      'career',
-      'professional',
-      'software developer',
-      'employment history',
-    ],
-    ogImage: '/meta/work.png',
+      'Professional journey across software development roles, startups, and product engineering.',
+    keywords: ['work experience', 'career', 'software developer'],
+    ogImage: siteConfig.ogImage,
     twitterCard: 'summary_large_image',
   },
-
-  // Projects page
   '/projects': {
-    title: 'Projects - My Work & Projects Portfolio',
+    title: `Projects — ${siteConfig.name}`,
     description:
-      'Discover my projects and work across different technologies and domains. From web apps to mobile solutions.',
-    keywords: [
-      'projects',
-      'portfolio',
-      'web development',
-      'applications',
-      'software',
-    ],
-    ogImage: '/meta/projects.png',
+      'Selected projects including StackKinetix Studio and Presently — AI automation, attendance platforms, and full-stack web apps.',
+    keywords: ['projects', 'portfolio', 'StackKinetix', 'Presently'],
+    ogImage: siteConfig.ogImage,
     twitterCard: 'summary_large_image',
   },
-
-  // Blog page
   '/blog': {
-    title: 'Blog - Thoughts & Tutorials',
+    title: `Blog — ${siteConfig.name}`,
     description:
-      'Read my thoughts, tutorials, and insights on engineering, programming, and web development.',
-    keywords: [
-      'blog',
-      'tutorials',
-      'programming',
-      'web development',
-      'technical writing',
-    ],
-    ogImage: '/meta/blogs.png',
+      'Writing on engineering, product development, and building software.',
+    keywords: ['blog', 'engineering', 'web development'],
+    ogImage: siteConfig.ogImage,
     twitterCard: 'summary_large_image',
   },
-
-  // Resume page
   '/resume': {
-    title: 'Resume - Professional CV',
-    description: `View and download ${heroConfig.name}'s professional resume and CV. Technical skills, experience, and qualifications.`,
-    keywords: [
-      'resume',
-      'cv',
-      'professional',
-      'skills',
-      'qualifications',
-      'download',
-    ],
-    ogImage: '/meta/resume.png',
+    title: `Resume — ${siteConfig.name}`,
+    description: `Professional resume and CV for ${siteConfig.name}. Skills, experience, and qualifications.`,
+    keywords: ['resume', 'cv', 'hire'],
+    ogImage: siteConfig.ogImage,
     twitterCard: 'summary',
   },
-
-  // Gears page
   '/gears': {
-    title: 'Gears - My Setup & Tools',
+    title: `Gears & Tools — ${siteConfig.name}`,
     description:
-      'Discover the tools, devices, and software I use to get my work done efficiently.',
-    keywords: [
-      'setup',
-      'tools',
-      'devices',
-      'software',
-      'productivity',
-      'development environment',
-    ],
-    ogImage: '/meta/gears.png',
+      'Devices, extensions, and software I use for development and productivity.',
+    keywords: ['setup', 'tools', 'developer environment'],
+    ogImage: siteConfig.ogImage,
     twitterCard: 'summary_large_image',
   },
-
-  // Setup page
   '/setup': {
-    title: 'Setup Guide - VS Code Configuration',
+    title: `VS Code Setup — ${siteConfig.name}`,
     description:
-      'Complete guide to setting up VS Code with my preferred configuration, extensions, and fonts for optimal development.',
-    keywords: [
-      'vscode',
-      'setup',
-      'configuration',
-      'extensions',
-      'development environment',
-      'guide',
-    ],
-    ogImage: '/meta/setup.png',
+      'My VS Code configuration, extensions, and fonts for a productive dev environment.',
+    keywords: ['vscode', 'setup', 'extensions'],
+    ogImage: siteConfig.ogImage,
     twitterCard: 'summary_large_image',
+  },
+  '/journey/certificates': {
+    title: `Certificates — ${siteConfig.name}`,
+    description:
+      'Certifications and achievements in software development and computer science.',
+    keywords: ['certificates', 'achievements', 'learning'],
+    ogImage: siteConfig.ogImage,
+    twitterCard: 'summary',
   },
 };
 
-// Helper function to get metadata for a specific page
 export function getPageMetadata(pathname: string): PageMeta {
-  return pageMetadata[pathname] || pageMetadata['/'];
+  return pageMetadata[pathname] ?? pageMetadata['/'];
 }
 
-// Helper function to generate complete metadata object for Next.js
 export function generateMetadata(pathname: string) {
   const pageMeta = getPageMetadata(pathname);
 
@@ -174,29 +93,32 @@ export function generateMetadata(pathname: string) {
     title: pageMeta.title,
     description: pageMeta.description,
     keywords: pageMeta.keywords?.join(', '),
-    authors: [{ name: siteConfig.author.name }],
+    authors: [{ name: siteConfig.author.name, url: siteConfig.url }],
     creator: siteConfig.author.name,
+    publisher: siteConfig.author.name,
     openGraph: {
       type: 'website',
-      url: `${siteConfig.url}${pathname}`,
+      locale: 'en_US',
+      url: `${siteConfig.url}${pathname === '/' ? '' : pathname}`,
       title: pageMeta.title,
       description: pageMeta.description,
-      siteName: siteConfig.title,
+      siteName: siteConfig.name,
       images: [
         {
-          url: pageMeta.ogImage || siteConfig.ogImage,
+          url: pageMeta.ogImage ?? siteConfig.ogImage,
           width: 1200,
           height: 630,
-          alt: pageMeta.title,
+          alt: `${siteConfig.name} — ${pageMeta.title}`,
         },
       ],
     },
     twitter: {
-      card: pageMeta.twitterCard || 'summary_large_image',
+      card: pageMeta.twitterCard ?? 'summary_large_image',
       title: pageMeta.title,
       description: pageMeta.description,
       creator: siteConfig.author.twitter,
-      images: [pageMeta.ogImage || siteConfig.ogImage],
+      site: siteConfig.author.twitter,
+      images: [pageMeta.ogImage ?? siteConfig.ogImage],
     },
     robots: {
       index: true,
@@ -205,12 +127,31 @@ export function generateMetadata(pathname: string) {
         index: true,
         follow: true,
         'max-video-preview': -1,
-        'max-image-preview': 'large',
+        'max-image-preview': 'large' as const,
         'max-snippet': -1,
       },
     },
     alternates: {
-      canonical: `${siteConfig.url}${pathname}`,
+      canonical: `${siteConfig.url}${pathname === '/' ? '' : pathname}`,
     },
+  };
+}
+
+export function getStructuredData() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: siteConfig.name,
+    url: siteConfig.url,
+    email: siteConfig.email,
+    jobTitle: siteConfig.title,
+    sameAs: [
+      siteConfig.social.github,
+      siteConfig.social.linkedin,
+      siteConfig.social.twitter,
+      siteConfig.social.medium,
+    ],
+    image: `${siteConfig.url}${siteConfig.avatar}`,
+    description: siteConfig.bio,
   };
 }
