@@ -48,8 +48,28 @@ function formatTrack(track: SpotifyTrack, isPlaying: boolean, progress = 0) {
     songUrl: track.external_urls.spotify,
     progress,
     duration: track.duration_ms,
-    label: isPlaying ? 'Now Playing' : 'Last played',
+    label: isPlaying ? 'Now Playing' : 'Last Played',
   };
+}
+
+async function getRecentlyPlayedTrack(
+  accessToken: string,
+): Promise<ReturnType<typeof formatTrack> | null> {
+  const recentResponse = await fetch(
+    `${SPOTIFY_API_URL}/me/player/recently-played?limit=1`,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      cache: 'no-store',
+    },
+  );
+
+  if (!recentResponse.ok) return null;
+
+  const recent = await recentResponse.json();
+  const track = recent.items?.[0]?.track as SpotifyTrack | undefined;
+  if (!track) return null;
+
+  return formatTrack(track, false, 0);
 }
 
 export const dynamic = 'force-dynamic';
@@ -81,26 +101,19 @@ export async function GET() {
       const song = await currentResponse.json();
       if (song?.item) {
         return trackResponse(
-          formatTrack(song.item, song.is_playing, song.progress_ms ?? 0),
+          formatTrack(
+            song.item,
+            Boolean(song.is_playing),
+            song.progress_ms ?? 0,
+          ),
         );
       }
     }
 
-    const recentResponse = await fetch(
-      `${SPOTIFY_API_URL}/me/player/recently-played?limit=1`,
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-        cache: 'no-store',
-      },
-    );
-
-    if (recentResponse.ok) {
-      const recent = await recentResponse.json();
-      const track = recent.items?.[0]?.track as SpotifyTrack | undefined;
-      if (track) {
-        return trackResponse(formatTrack(track, false, 0));
-      }
-    }
+    // 204 = nothing playing; also fall back when 200 has no track or
+    // currently-playing is unavailable (e.g. 403 without Premium)
+    const recentTrack = await getRecentlyPlayedTrack(accessToken);
+    if (recentTrack) return trackResponse(recentTrack);
   } catch {
     // fall through to idle
   }

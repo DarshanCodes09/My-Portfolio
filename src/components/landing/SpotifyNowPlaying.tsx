@@ -51,7 +51,7 @@ function parseSpotifyResponse(json: unknown): SpotifyData {
           ? data.label
           : data.isPlaying
             ? 'Now Playing'
-            : 'Last played',
+            : 'Last Played',
     };
   }
 
