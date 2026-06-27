@@ -1,18 +1,66 @@
 'use client';
 
-import { spotifyConfig } from '@/config/Spotify';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-type SpotifyData = {
-  configured: boolean;
-  error?: string;
-  isPlaying?: boolean;
-  title?: string;
-  artist?: string;
-  songUrl?: string;
-  label?: string;
+const IDLE_MESSAGE = 'Not listening to Spotify right now.';
+
+type SpotifyTrackData = {
+  playing: true;
+  isPlaying: boolean;
+  title: string;
+  artist: string;
+  songUrl: string;
+  label: string;
 };
+
+type SpotifyIdleData = {
+  playing: false;
+  idle: true;
+  message: string;
+};
+
+type SpotifyData = SpotifyTrackData | SpotifyIdleData;
+
+const IDLE_STATE: SpotifyIdleData = {
+  playing: false,
+  idle: true,
+  message: IDLE_MESSAGE,
+};
+
+function parseSpotifyResponse(json: unknown): SpotifyData {
+  if (!json || typeof json !== 'object') return IDLE_STATE;
+
+  const data = json as Record<string, unknown>;
+
+  if (
+    data.playing === true &&
+    typeof data.title === 'string' &&
+    data.title.length > 0 &&
+    typeof data.songUrl === 'string' &&
+    typeof data.artist === 'string'
+  ) {
+    return {
+      playing: true,
+      isPlaying: Boolean(data.isPlaying),
+      title: data.title,
+      artist: data.artist,
+      songUrl: data.songUrl,
+      label:
+        typeof data.label === 'string'
+          ? data.label
+          : data.isPlaying
+            ? 'Now Playing'
+            : 'Last played',
+    };
+  }
+
+  if (typeof data.message === 'string' && data.message.length > 0) {
+    return { playing: false, idle: true, message: data.message };
+  }
+
+  return IDLE_STATE;
+}
 
 function SpotifyIcon({ className }: { className?: string }) {
   return (
@@ -30,47 +78,74 @@ function SpotifyIcon({ className }: { className?: string }) {
 
 export default function SpotifyNowPlaying() {
   const [data, setData] = useState<SpotifyData | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    async function fetchSpotify() {
-      try {
-        const res = await fetch('/api/spotify', { cache: 'no-store' });
-        const json = await res.json();
-        setData(json);
-      } catch {
-        setData({ configured: false });
+  const fetchSpotify = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/spotify?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      });
+
+      if (!res.ok) {
+        setData(IDLE_STATE);
+        return;
       }
-    }
 
-    fetchSpotify();
-    const interval = setInterval(fetchSpotify, 5000);
-    return () => clearInterval(interval);
+      const contentType = res.headers.get('content-type') ?? '';
+      if (!contentType.includes('application/json')) {
+        setData(IDLE_STATE);
+        return;
+      }
+
+      const json: unknown = await res.json();
+      setData(parseSpotifyResponse(json));
+    } catch {
+      setData(IDLE_STATE);
+    } finally {
+      setLoaded(true);
+    }
   }, []);
 
-  const isLive = Boolean(data?.configured && data.title);
-  const title = isLive ? data!.title! : spotifyConfig.track;
-  const artist = isLive ? data!.artist! : spotifyConfig.artists;
-  const songUrl = isLive ? data!.songUrl! : spotifyConfig.url;
-  const label =
-    isLive && data?.isPlaying
-      ? 'Now Playing'
-      : isLive
-        ? 'Last played'
-        : spotifyConfig.label;
-  const isPlaying = Boolean(isLive && data?.isPlaying);
-  const needsSetup =
-    !data?.configured || data?.error === 'invalid_refresh_token';
-  const needsPremium = data?.error === 'premium_required' && !isLive;
+  useEffect(() => {
+    fetchSpotify();
+    const interval = setInterval(fetchSpotify, 5000);
+
+    const handleOnline = () => {
+      setData(null);
+      setLoaded(false);
+      fetchSpotify();
+    };
+
+    window.addEventListener('online', handleOnline);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('online', handleOnline);
+    };
+  }, [fetchSpotify]);
+
+  if (!loaded || !data) return null;
+
+  if (!data.playing) {
+    return (
+      <div className="mb-6">
+        <p className="inline-flex max-w-full items-center gap-2 text-[12px] text-zinc-500 sm:text-[13px]">
+          <SpotifyIcon className="size-3.5 shrink-0 text-[#1DB954] sm:size-4" />
+          <span>{data.message}</span>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-6">
       <Link
-        href={songUrl}
+        href={data.songUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="group inline-flex max-w-full items-center gap-2 text-[12px] transition-opacity hover:opacity-90 sm:text-[13px]"
       >
-        {isPlaying && (
+        {data.isPlaying && (
           <span className="relative flex size-2 shrink-0">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#1DB954] opacity-75" />
             <span className="relative inline-flex size-2 rounded-full bg-[#1DB954]" />
@@ -80,49 +155,21 @@ export default function SpotifyNowPlaying() {
         <SpotifyIcon className="size-3.5 shrink-0 text-[#1DB954] sm:size-4" />
 
         <span className="shrink-0 font-medium text-zinc-500 dark:text-zinc-500">
-          {label}
+          {data.label}
         </span>
 
         <span className="shrink-0 text-zinc-400 dark:text-zinc-600">—</span>
 
         <span className="truncate font-medium text-zinc-800 dark:text-zinc-200">
-          {title}
+          {data.title}
         </span>
 
         <span className="shrink-0 text-zinc-400 dark:text-zinc-600">·</span>
 
         <span className="truncate text-zinc-500 dark:text-zinc-400">
-          {artist}
+          {data.artist}
         </span>
       </Link>
-
-      {needsSetup && (
-        <p className="text-muted mt-2 text-[11px]">
-          <Link href="/spotify-setup" className="text-link text-[11px]">
-            Connect Spotify
-          </Link>{' '}
-          for live playback
-        </p>
-      )}
-
-      {needsPremium && (
-        <p className="text-muted mt-2 text-[11px]">
-          Spotify API blocked — connect{' '}
-          <a
-            href="https://www.last.fm/settings/applications"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-link text-[11px]"
-          >
-            Last.fm
-          </a>{' '}
-          as a workaround. See{' '}
-          <Link href="/spotify-setup" className="text-link text-[11px]">
-            setup guide
-          </Link>
-          .
-        </p>
-      )}
     </div>
   );
 }

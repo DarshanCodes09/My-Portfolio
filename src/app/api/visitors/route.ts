@@ -8,12 +8,15 @@ const TMP_COUNT_FILE = path.join('/tmp', 'visitor-count.json');
 const BASE_COUNT = Number(process.env.VISITOR_COUNT_BASE || 0);
 const COUNTAPI_NAMESPACE =
   process.env.VISITOR_COUNT_NAMESPACE || 'darshan-kushalkar-portfolio';
+const COUNTER_KEY =
+  process.env.VISITOR_COUNTER_KEY || `${COUNTAPI_NAMESPACE}-visitors`;
+const COUNTER_API = 'https://countapi.mileshilliard.com/api/v1';
 
 async function readFileCount(filePath: string): Promise<number | null> {
   try {
     const raw = await fs.readFile(filePath, 'utf-8');
     const data = JSON.parse(raw) as { count: number };
-    return data.count || 0;
+    return typeof data.count === 'number' ? data.count : null;
   } catch {
     return null;
   }
@@ -55,40 +58,52 @@ async function incrementLocalCount(): Promise<number | null> {
   return null;
 }
 
-async function fetchCountApi(increment: boolean): Promise<number | null> {
+async function fetchRemoteCount(increment: boolean): Promise<number | null> {
   const endpoint = increment
-    ? `https://api.countapi.xyz/hit/${encodeURIComponent(COUNTAPI_NAMESPACE)}/visitors`
-    : `https://api.countapi.xyz/get/${encodeURIComponent(COUNTAPI_NAMESPACE)}/visitors`;
+    ? `${COUNTER_API}/hit/${encodeURIComponent(COUNTER_KEY)}`
+    : `${COUNTER_API}/get/${encodeURIComponent(COUNTER_KEY)}`;
 
   try {
     const response = await fetch(endpoint, { cache: 'no-store' });
     if (!response.ok) return null;
 
-    const data = (await response.json()) as { value?: number };
-    return typeof data.value === 'number' ? data.value : null;
+    const data = (await response.json()) as { value?: number | string };
+    const parsed = Number(data.value);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
   } catch {
     return null;
   }
 }
 
-async function getVisitorCount(increment: boolean): Promise<number> {
-  if (increment) {
-    const local = await incrementLocalCount();
-    if (local !== null) return BASE_COUNT + local;
+function toPublicCount(raw: number | null): number | null {
+  if (raw === null) return null;
+  const total = BASE_COUNT + raw;
+  return total > 0 ? total : null;
+}
 
-    const remote = await fetchCountApi(true);
-    if (remote !== null) return BASE_COUNT + remote;
-  } else {
-    const local = await readLocalCount();
-    if (local > 0 || (await readFileCount(COUNT_FILE)) !== null) {
-      return BASE_COUNT + local;
-    }
+async function getVisitorCount(increment: boolean): Promise<number | null> {
+  const isVercel = process.env.VERCEL === '1';
 
-    const remote = await fetchCountApi(false);
-    if (remote !== null) return BASE_COUNT + remote;
+  if (isVercel) {
+    return toPublicCount(await fetchRemoteCount(increment));
   }
 
-  return BASE_COUNT + (await readLocalCount());
+  if (increment) {
+    const local = await incrementLocalCount();
+    if (local !== null) return toPublicCount(local);
+
+    return toPublicCount(await fetchRemoteCount(true));
+  }
+
+  const hasLocalFile =
+    (await readFileCount(COUNT_FILE)) !== null ||
+    (await readFileCount(TMP_COUNT_FILE)) !== null;
+
+  if (hasLocalFile) {
+    return toPublicCount(await readLocalCount());
+  }
+
+  return toPublicCount(await fetchRemoteCount(false));
 }
 
 export async function GET() {
@@ -97,7 +112,10 @@ export async function GET() {
 
   const count = await getVisitorCount(!seen);
 
-  const response = NextResponse.json({ count });
+  const response = NextResponse.json({
+    count,
+    available: count !== null,
+  });
 
   if (!seen) {
     response.cookies.set('visitor_seen', '1', {

@@ -27,10 +27,17 @@ export default function VisitorCounter({
         if (!contentType.includes('application/json')) {
           throw new Error('Invalid visitor response');
         }
-        return res.json() as Promise<{ count?: number }>;
+        return res.json() as Promise<{
+          count?: number | null;
+          available?: boolean;
+        }>;
       })
       .then((data) => {
-        if (typeof data.count === 'number') {
+        if (
+          data.available !== false &&
+          typeof data.count === 'number' &&
+          data.count > 0
+        ) {
           setCount(data.count);
         }
       })
