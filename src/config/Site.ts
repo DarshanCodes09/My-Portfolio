@@ -5,7 +5,7 @@ export const siteConfig = {
   email: 'thedarshan.dev@gmail.com',
   pronouns: 'he/him',
   avatar: '/assets/logo.png',
-  bio: 'I build full-stack web products end-to-end, obsessing over small details that make software feel right to use. Currently working with TypeScript, React, Next.js, and Tailwind CSS.',
+  bio: 'I build end-to-end web products, paying attention to the small details that make software feel polished and effortless to use. Currently working with TypeScript, React, Next.js, Tailwind CSS.',
   url: process.env.NEXT_PUBLIC_URL ?? 'http://localhost:3000',
   ogImage: '/assets/logo.png',
   roles: [
