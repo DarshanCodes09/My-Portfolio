@@ -9,7 +9,8 @@ Personal portfolio website showcasing my work as a **Full-Stack Developer**. Bui
 
 ## About
 
-I'm **Darshan Kushalkar**, a full-stack developer from India. I build web products end-to-end — from AI automation platforms to attendance systems — with a focus on clean UI, performance, and developer experience.
+I'm **Darshan Kushalkar**, a full-stack developer building modern web apps, AI products, and automation systems with a focus on performance, simplicity, and exceptional user experience.
+
 
 This portfolio includes:
 
