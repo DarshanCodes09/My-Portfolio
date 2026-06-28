@@ -18,7 +18,6 @@ export default function ProjectsPage() {
 
       <Container className="relative !max-w-4xl py-16 sm:py-20">
         <header className="mb-14 space-y-4 sm:mb-16">
-          <p className="section-kicker">Selected Work</p>
           <h1 className="section-title text-4xl sm:text-5xl">Projects</h1>
           <p className="text-secondary max-w-xl text-[15px] leading-relaxed sm:text-base">
             A curated collection of products and platforms I&apos;ve designed

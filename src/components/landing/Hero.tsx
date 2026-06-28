@@ -4,6 +4,7 @@ import Image from 'next/image';
 
 import Container from '../common/Container';
 import FadeIn from '../common/FadeIn';
+import BioText from './BioText';
 import RotatingRoles from './RotatingRoles';
 import SocialLinks from './SocialLinks';
 import SpotifyNowPlaying from './SpotifyNowPlaying';
@@ -104,44 +105,7 @@ export default function Hero() {
 
       <FadeIn delay={0.14}>
         <p className="text-secondary mb-8 text-[13.5px] leading-[1.85] font-[450] sm:text-[15px]">
-          I build full-stack web products end-to-end, obsessing over small
-          details that make software feel right to use. Currently working with{' '}
-          <a
-            href="https://www.typescriptlang.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-link font-medium"
-          >
-            TypeScript
-          </a>
-          ,{' '}
-          <a
-            href="https://react.dev/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-link font-medium"
-          >
-            React
-          </a>
-          ,{' '}
-          <a
-            href="https://nextjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-link font-medium"
-          >
-            Next.js
-          </a>
-          , and{' '}
-          <a
-            href="https://tailwindcss.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-link font-medium"
-          >
-            Tailwind CSS
-          </a>
-          .
+          <BioText text={siteConfig.bio} />
         </p>
       </FadeIn>
 
