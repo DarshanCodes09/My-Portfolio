@@ -13,12 +13,22 @@ type SpotifyTrack = {
   duration_ms: number;
 };
 
-function idleResponse() {
+function idleResponse(
+  reason?: 'missing_credentials' | 'invalid_token' | 'no_data',
+) {
+  const setupRequired =
+    reason === 'missing_credentials' || reason === 'invalid_token';
+
   return NextResponse.json(
     {
       playing: false,
       idle: true,
       message: IDLE_MESSAGE,
+      ...(setupRequired
+        ? { setupRequired: true, reason }
+        : reason
+          ? { reason }
+          : {}),
     },
     {
       headers: {
@@ -80,12 +90,12 @@ export async function GET() {
   const refreshToken = await getStoredRefreshToken();
 
   if (!clientId || !clientSecret || !refreshToken) {
-    return idleResponse();
+    return idleResponse('missing_credentials');
   }
 
   const accessToken = await getSpotifyAccessToken();
   if (!accessToken) {
-    return idleResponse();
+    return idleResponse('invalid_token');
   }
 
   try {
@@ -109,14 +119,14 @@ export async function GET() {
         );
       }
     }
-
-    // 204 = nothing playing; also fall back when 200 has no track or
-    // currently-playing is unavailable (e.g. 403 without Premium)
-    const recentTrack = await getRecentlyPlayedTrack(accessToken);
-    if (recentTrack) return trackResponse(recentTrack);
   } catch {
-    // fall through to idle
+    // fall through to recently-played
   }
 
-  return idleResponse();
+  // 204 = nothing playing; also fall back when 200 has no track or
+  // currently-playing is unavailable (e.g. 403 without Premium)
+  const recentTrack = await getRecentlyPlayedTrack(accessToken);
+  if (recentTrack) return trackResponse(recentTrack);
+
+  return idleResponse('no_data');
 }

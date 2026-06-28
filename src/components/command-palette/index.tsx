@@ -249,6 +249,40 @@ export function CommandPalette({
   );
 }
 
+function SearchIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
+}
+
+export function CommandPaletteMobileSearchTrigger() {
+  const { openPalette } = useCommandPalette();
+
+  return (
+    <button
+      type="button"
+      onClick={openPalette}
+      className="text-muted hover:text-primary flex size-9 items-center justify-center rounded-md border border-zinc-200 transition-colors sm:hidden dark:border-zinc-800"
+      aria-label="Open search"
+    >
+      <SearchIcon size={16} />
+    </button>
+  );
+}
+
 export function CommandPaletteSearchTrigger() {
   const { openPalette } = useCommandPalette();
 
@@ -259,19 +293,7 @@ export function CommandPaletteSearchTrigger() {
       className="text-muted hover:text-primary hidden items-center gap-2 rounded-md border border-zinc-200 px-3 py-1.5 text-sm transition-colors sm:flex dark:border-zinc-800"
       aria-label="Open command palette"
     >
-      <svg
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="11" cy="11" r="8" />
-        <path d="m21 21-4.3-4.3" />
-      </svg>
+      <SearchIcon />
       <span>Search</span>
       <kbd className="bg-muted pointer-events-none rounded px-1.5 py-0.5 text-[10px] font-medium">
         Ctrl K

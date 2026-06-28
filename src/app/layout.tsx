@@ -10,6 +10,7 @@ import {
 import { siteConfig } from '@/config/Site';
 import ReactLenis from 'lenis/react';
 import { ViewTransitions } from 'next-view-transitions';
+import Script from 'next/script';
 import { Toaster } from 'sonner';
 
 import './globals.css';
@@ -26,6 +27,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const structuredData = getStructuredData();
+  const umamiSrc = process.env.NEXT_PUBLIC_UMAMI_SRC;
+  const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+  const enableUmami =
+    process.env.NODE_ENV === 'production' && umamiSrc && umamiWebsiteId;
 
   return (
     <ViewTransitions>
@@ -37,6 +42,13 @@ export default function RootLayout({
           />
         </head>
         <body className="bg-background font-hanken-grotesk antialiased">
+          {enableUmami && (
+            <Script
+              src={umamiSrc}
+              data-website-id={umamiWebsiteId}
+              strategy="afterInteractive"
+            />
+          )}
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"

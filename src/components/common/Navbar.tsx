@@ -1,4 +1,7 @@
-import { CommandPaletteSearchTrigger } from '@/components/command-palette';
+import {
+  CommandPaletteMobileSearchTrigger,
+  CommandPaletteSearchTrigger,
+} from '@/components/command-palette';
 import { navbarConfig } from '@/config/Navbar';
 import Link from 'next/link';
 
@@ -29,6 +32,7 @@ export default function Navbar() {
             ))}
           </div>
           <div className="flex items-center gap-3">
+            <CommandPaletteMobileSearchTrigger />
             <CommandPaletteSearchTrigger />
             <ThemeToggleButton variant="circle" start="top-right" blur />
           </div>

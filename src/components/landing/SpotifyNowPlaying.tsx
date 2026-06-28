@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
 const IDLE_MESSAGE = 'Not listening to Spotify right now.';
+const STORAGE_KEY = 'spotify-last-track';
 
 type SpotifyTrackData = {
   playing: true;
@@ -18,6 +19,7 @@ type SpotifyIdleData = {
   playing: false;
   idle: true;
   message: string;
+  setupRequired?: boolean;
 };
 
 type SpotifyData = SpotifyTrackData | SpotifyIdleData;
@@ -27,6 +29,64 @@ const IDLE_STATE: SpotifyIdleData = {
   idle: true,
   message: IDLE_MESSAGE,
 };
+
+function loadCachedTrack(): SpotifyTrackData | null {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return null;
+
+    const data = parsed as Record<string, unknown>;
+    if (
+      typeof data.title !== 'string' ||
+      data.title.length === 0 ||
+      typeof data.songUrl !== 'string' ||
+      typeof data.artist !== 'string'
+    ) {
+      return null;
+    }
+
+    return {
+      playing: true,
+      isPlaying: false,
+      title: data.title,
+      artist: data.artist,
+      songUrl: data.songUrl,
+      label: 'Last Played',
+    };
+  } catch {
+    return null;
+  }
+}
+
+function saveCachedTrack(track: SpotifyTrackData) {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        title: track.title,
+        artist: track.artist,
+        songUrl: track.songUrl,
+      }),
+    );
+  } catch {
+    // ignore quota / private browsing errors
+  }
+}
+
+function resolveDisplayData(data: SpotifyData): SpotifyData {
+  if (data.playing) return data;
+  if (data.setupRequired) return data;
+
+  const cached = loadCachedTrack();
+  if (cached) return cached;
+
+  return data;
+}
 
 function parseSpotifyResponse(json: unknown): SpotifyData {
   if (!json || typeof json !== 'object') return IDLE_STATE;
@@ -56,7 +116,12 @@ function parseSpotifyResponse(json: unknown): SpotifyData {
   }
 
   if (typeof data.message === 'string' && data.message.length > 0) {
-    return { playing: false, idle: true, message: data.message };
+    return {
+      playing: false,
+      idle: true,
+      message: data.message,
+      setupRequired: Boolean(data.setupRequired),
+    };
   }
 
   return IDLE_STATE;
@@ -80,6 +145,13 @@ export default function SpotifyNowPlaying() {
   const [data, setData] = useState<SpotifyData | null>(null);
   const [loaded, setLoaded] = useState(false);
 
+  const applySpotifyData = useCallback((next: SpotifyData) => {
+    if (next.playing) {
+      saveCachedTrack(next);
+    }
+    setData(resolveDisplayData(next));
+  }, []);
+
   const fetchSpotify = useCallback(async () => {
     try {
       const res = await fetch(`/api/spotify?t=${Date.now()}`, {
@@ -88,24 +160,24 @@ export default function SpotifyNowPlaying() {
       });
 
       if (!res.ok) {
-        setData(IDLE_STATE);
+        applySpotifyData(IDLE_STATE);
         return;
       }
 
       const contentType = res.headers.get('content-type') ?? '';
       if (!contentType.includes('application/json')) {
-        setData(IDLE_STATE);
+        applySpotifyData(IDLE_STATE);
         return;
       }
 
       const json: unknown = await res.json();
-      setData(parseSpotifyResponse(json));
+      applySpotifyData(parseSpotifyResponse(json));
     } catch {
-      setData(IDLE_STATE);
+      applySpotifyData(IDLE_STATE);
     } finally {
       setLoaded(true);
     }
-  }, []);
+  }, [applySpotifyData]);
 
   useEffect(() => {
     fetchSpotify();
@@ -133,6 +205,14 @@ export default function SpotifyNowPlaying() {
           <SpotifyIcon className="size-3.5 shrink-0 text-[#1DB954] sm:size-4" />
           <span>{data.message}</span>
         </p>
+        {data.setupRequired && (
+          <p className="text-muted mt-2 text-[11px]">
+            <Link href="/spotify-setup" className="text-link text-[11px]">
+              Connect Spotify
+            </Link>{' '}
+            to show your last played track.
+          </p>
+        )}
       </div>
     );
   }
